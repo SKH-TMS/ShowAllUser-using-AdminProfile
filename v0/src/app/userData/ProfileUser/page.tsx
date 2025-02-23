@@ -102,22 +102,6 @@ export default function Profile() {
     }
   };
 
-  const handleLogout = async () => {
-    router.push("/userData/LoginUser"); // Redirect immediately
-
-    try {
-      const response = await fetch("../../api/auth/logout", {
-        method: "GET",
-      });
-      const data = await response.json();
-      if (!data.success) {
-        console.error("Error logging out:", data.message);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -167,12 +151,6 @@ export default function Profile() {
             className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
           >
             Change Profile Picture
-          </button>
-          <button
-            onClick={handleLogout}
-            className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
-          >
-            Log Out
           </button>
         </div>
       </div>
