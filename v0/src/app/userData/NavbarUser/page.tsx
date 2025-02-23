@@ -2,17 +2,34 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function NavbarUser() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    setIsAuthenticated(false);
+    sessionStorage.removeItem("userType"); // Clear userType from storage
+    router.push("/userData/LoginUser"); // Redirect to LoginUser
+
+    try {
+      const response = await fetch("../../api/auth/logout", {
+        method: "GET",
+      });
+      const data = await response.json();
+      if (!data.success) {
+        console.error("Error logging out:", data.message);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   useEffect(() => {
-    // Check if there's a token in cookies
-
-    const token = document.cookie
-      .split(";")
-      .find((cookie) => cookie.trim().startsWith("token="));
-    setIsAuthenticated(!!token); // Set authentication state based on token presence
+    // ✅ Check authentication status from sessionStorage
+    const userType = sessionStorage.getItem("userType");
+    setIsAuthenticated(userType === "User");
   }, []);
 
   return (
@@ -21,12 +38,20 @@ export default function NavbarUser() {
         <Link href="/">Home</Link>
       </div>
       <div>
-        <Link href="/userData/RegisterUser">Register</Link>
-        <Link href="/userData/LoginUser">Login</Link>
-        <Link href="/userData/ProfileUser">Profile</Link>
-        {isAuthenticated ? (
-          <Link href="../../api/auth/logout">Logout</Link>
-        ) : null}
+        {!isAuthenticated ? (
+          <>
+            <Link href="/userData/RegisterUser">Register</Link>
+            <Link href="/userData/LoginUser">Login</Link>
+          </>
+        ) : (
+          <>
+            <Link href="userData/ProfileUser">Profile</Link>
+
+            <a className="cursor-pointer" onClick={handleLogout}>
+              Logout
+            </a>
+          </>
+        )}
       </div>
     </nav>
   );
