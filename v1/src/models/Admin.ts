@@ -19,18 +19,52 @@ export interface IAdmin extends Document {
 // Define Admin Schema
 const adminSchema = new Schema<IAdmin>(
   {
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    firstname: { type: String, required: true },
-    lastname: { type: String, required: true },
-    contact: { type: String },
-    profilepic: { type: String, required: true },
-    userType: { type: String, required: true },
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      unique: true,
+      match: [
+        /^(?!.*\.\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/,
+        "Invalid email format",
+      ],
+      lowercase: true,
+      trim: true,
+    },
+    password: { type: String, required: [true, "Password is required"] },
+    firstname: {
+      type: String,
+      required: [true, "First name is required"],
+      match: [/^[A-Za-z]+([ '-][A-Za-z]+)*$/, "Invalid first name"],
+    },
+    lastname: {
+      type: String,
+      required: [true, "Last name is required"],
+      match: [/^[A-Za-z]+([ '-][A-Za-z]+)*$/, "Invalid last name"],
+    },
+    contact: {
+      type: String,
+      match: [
+        /^(?:\+?(\d{1,4})[-.\s]?)?(?:\(?\d{2,4}\)?[-.\s]?)?\d{3,4}[-.\s]?\d{3,4}$/,
+        "Invalid contact number",
+      ],
+    },
+    profilepic: {
+      type: String,
+      required: [true, "Profile picture is required"],
+    },
+    userType: { type: String, required: [true, "User type is required"] },
   },
   {
-    timestamps: true, // Adds createdAt and updatedAt
+    timestamps: true, // Adds createdAt and updatedAt automatically
   }
 );
+// to save email address to lowercase
+adminSchema.pre("save", function (next) {
+  if (this.email) {
+    this.email = this.email.toLowerCase();
+  }
+  next();
+});
 
 // Pre-save hook to hash password before saving
 adminSchema.pre("save", async function (next) {
