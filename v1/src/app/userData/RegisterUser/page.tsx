@@ -271,7 +271,7 @@ export default function Register() {
           body: JSON.stringify({
             firstname: first_name,
             lastname: last_name,
-            email: reg_email,
+             email: reg_email.toLowerCase().trim(),
             password: regPassword,
             contact: contact_number,
             userType: "User",
