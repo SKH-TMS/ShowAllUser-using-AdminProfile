@@ -20,13 +20,40 @@ export interface IUser extends Document {
 // Define User Schema
 const userSchema = new Schema<IUser>(
   {
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    firstname: { type: String, required: true },
-    lastname: { type: String, required: true },
-    contact: { type: String },
-    profilepic: { type: String, required: true },
-    userType: { type: String, required: true },
+    email: {
+      type: String,
+      required: [true, "email is required"],
+      unique: true,
+      match: [
+        /^(?!.*\.\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/,
+        "Invalid email format",
+      ],
+      lowercase: true,
+      trim: true,
+    },
+    password: { type: String, required: [true, "password is required"] },
+    firstname: {
+      type: String,
+      required: [true, "firstname is required"],
+      match: [/^[A-Za-z]+([ '-][A-Za-z]+)*$/, "Invalid first name"],
+    },
+    lastname: {
+      type: String,
+      required: [true, "lastname is required"],
+      match: [/^[A-Za-z]+([ '-][A-Za-z]+)*$/, "Invalid last name"],
+    },
+    contact: {
+      type: String,
+      match: [
+        /^(?:\+?(\d{1,4})[-.\s]?)?(?:\(?\d{2,4}\)?[-.\s]?)?\d{3,4}[-.\s]?\d{3,4}$/,
+        "Invalid contact number",
+      ],
+    },
+    profilepic: {
+      type: String,
+      required: [true, "Profile picture is required"],
+    },
+    userType: { type: String, required: [true, "User type is required"] },
     userRole: { type: String, required: true },
     UserId: { type: String, unique: true },
   },
@@ -34,6 +61,13 @@ const userSchema = new Schema<IUser>(
     timestamps: true, // Adds createdAt and updatedAt
   }
 );
+
+userSchema.pre("save", function (next) {
+  if (this.email) {
+    this.email = this.email.toLowerCase();
+  }
+  next();
+});
 
 // Pre-save hook to assign auto-incremented `UserId`
 userSchema.pre("save", async function (next) {
