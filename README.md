@@ -16,6 +16,7 @@ Repositry Number: T17 and T19
 
 - no glables.css
 - without modules
+- not tested, **userType** should be in token. it is done in **UdateRepository**.
 
 ### Version 1 (v1)
 
