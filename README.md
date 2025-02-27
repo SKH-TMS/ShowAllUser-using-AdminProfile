@@ -15,7 +15,12 @@ Repositry Number: T17 and T19
 ### Version 0 (v0)
 
 - no glables.css
+- without modules
 
+### Version 1 (v1)
+
+- **Problem in V0:** database connection and collection's name are used in every file, due to absence of model.
+- Use model and solve problem exists in version 0.
 
 ## How to Run:
 
